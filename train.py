@@ -36,29 +36,22 @@ mlflow.set_tracking_uri(tracking_uri)
 experiment_name = "CI-CD-Lab2"
 experiment_id = None # Inicializar variable
 try:
-    # Intentar crear el experimento, proporcionando la ubicación del artefacto
     experiment_id = mlflow.create_experiment(
         name=experiment_name,
-        artifact_location=artifact_location # ¡Forzar la ubicación aquí!
+        artifact_location=artifact_location
     )
-    print(f"--- Debug: Creado Experimento '{experiment_name}' con ID: {experiment_id} ---")
-except mlflow.exceptions.MlflowException as e:
-    if "RESOURCE_ALREADY_EXISTS" in str(e):
-        print(f"--- Debug: Experimento '{experiment_name}' ya existe. Obteniendo ID. ---")
-        # Obtener el experimento existente para conseguir su ID
-        experiment = mlflow.get_experiment_by_name(experiment_name)
-        if experiment:
-            experiment_id = experiment.experiment_id
-            print(f"--- Debug: ID del Experimento Existente: {experiment_id} ---")
-            print(f"--- Debug: Ubicación de Artefacto del Experimento Existente: {experiment.artifact_location} ---")
-            # Opcional: Verificar si la ubicación del artefacto es la correcta
-            if experiment.artifact_location != artifact_location:
-                 print(f"--- WARNING: La ubicación del artefacto del experimento existente ('{experiment.artifact_location}') NO coincide con la deseada ('{artifact_location}')! ---")
-        else:
+    print(f"✅ Debug: Creado Experimento '{experiment_name}' con ID: {experiment_id}")
+except mlflow.exceptions.MlflowException:
+    experiment = mlflow.get_experiment_by_name(experiment_name)
+    if experiment is not None:
+        experiment_id = experiment.experiment_id
+        print(f"ℹ️ Debug: El experimento '{experiment_name}' ya existía. Usando ID: {experiment_id}")
+
+    else:
             # Esto no debería ocurrir si RESOURCE_ALREADY_EXISTS fue el error
             print(f"--- ERROR: No se pudo obtener el experimento existente '{experiment_name}' por nombre. ---")
             sys.exit(1)
-    else:
+else:
         print(f"--- ERROR creando/obteniendo experimento: {e} ---")
         raise e # Relanzar otros errores
 
