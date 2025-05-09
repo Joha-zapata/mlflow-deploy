@@ -48,10 +48,9 @@ except mlflow.exceptions.MlflowException as e:
         print(f"ℹ️ Debug: El experimento '{experiment_name}' ya existía. Usando ID: {experiment_id}")
     else:
         print(f"❌ --- ERROR: No se pudo obtener el experimento existente '{experiment_name}' por nombre. ---")
+        print(f"❌ --- ERROR creando/obteniendo experimento: {e} ---")
+        raise e
         sys.exit(1)
-else:
-    print(f"❌ --- ERROR creando/obteniendo experimento: {e} ---")
-    raise e
 
 # Asegurarse de que tenemos un experiment_id válido
 if experiment_id is None:
