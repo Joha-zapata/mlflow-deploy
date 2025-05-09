@@ -41,19 +41,17 @@ try:
         artifact_location=artifact_location
     )
     print(f"✅ Debug: Creado Experimento '{experiment_name}' con ID: {experiment_id}")
-except mlflow.exceptions.MlflowException:
+except mlflow.exceptions.MlflowException as e:
     experiment = mlflow.get_experiment_by_name(experiment_name)
     if experiment is not None:
         experiment_id = experiment.experiment_id
         print(f"ℹ️ Debug: El experimento '{experiment_name}' ya existía. Usando ID: {experiment_id}")
-
     else:
-            # Esto no debería ocurrir si RESOURCE_ALREADY_EXISTS fue el error
-            print(f"--- ERROR: No se pudo obtener el experimento existente '{experiment_name}' por nombre. ---")
-            sys.exit(1)
+        print(f"❌ --- ERROR: No se pudo obtener el experimento existente '{experiment_name}' por nombre. ---")
+        sys.exit(1)
 else:
-        print(f"--- ERROR creando/obteniendo experimento: {e} ---")
-        raise e # Relanzar otros errores
+    print(f"❌ --- ERROR creando/obteniendo experimento: {e} ---")
+    raise e
 
 # Asegurarse de que tenemos un experiment_id válido
 if experiment_id is None:
