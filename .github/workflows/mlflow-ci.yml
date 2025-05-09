@@ -1,0 +1,38 @@
+name: CI/CD para ML con MLflow
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  ml_pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 📦 Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install mlflow joblib scikit-learn pandas
+
+      - name: 🧪 Entrenar modelo
+        run: make train
+
+      - name: ✅ Validar desempeño del modelo
+        run: make validate
+
+      - name: 📤 Subir modelo como artefacto (si pasa validación)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo-validado
+          path: model.pkl
+  
